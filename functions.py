@@ -51,6 +51,10 @@ def write_ini():
     #     saves.write(f_out)
 
 
+def draw_board(align_right: bool = False) -> str:
+    """Формирует и возвращает строку, содержащую псевдографическое изображение игрового поля с сделанными ходами."""
+
+
 # тесты
 if __name__ == '__main__':
     read_ini()
