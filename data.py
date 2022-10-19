@@ -5,7 +5,7 @@
 STATS = {}
 SAVES = {}
 
-PLAYERS = ['PlayerA', 'PlayerB']
+PLAYERS = []
 TOKENS = ('X', 'O')
 
 DIM = 3
@@ -14,6 +14,8 @@ RANGE_FLAT = range(DIM**2)
 
 TURNS = []
 BOARD = [''] * DIM**2
+
+TRAINING = False
 
 # глобальные константы
 APP_TITLE = "КРЕСТИКИ-НОЛИКИ"
