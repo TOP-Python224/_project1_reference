@@ -16,7 +16,7 @@ if functions.read_ini():
     pass
 
 # 3. Запрос имени игрока
-functions.get_name()
+functions.get_player_name()
 
 # суперцикл
 while True:
@@ -26,7 +26,7 @@ while True:
     # new
     if command in data.COMMANDS['начать новую партию']:
         # 5. Запрос режима игры:
-        gameset.get_mode()
+        gameset.game_mode()
         # партия
         res = game.game()
         # 19. Удаление автосохранения и обновление статистики
