@@ -4,6 +4,7 @@
 from pathlib import Path
 from sys import path
 from configparser import ConfigParser
+from shutil import get_terminal_size as gts
 
 
 # импорт дополнительных модулей

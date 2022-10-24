@@ -29,8 +29,11 @@ while True:
         gameset.game_mode()
         # партия
         res = game.game()
-        # 19. Удаление автосохранения и обновление статистики
-        functions.update_stats(res)
+        # 18. ЕСЛИ есть победная комбинация:
+        if res:
+            # 19. Удаление автосохранения и обновление статистики
+            del data.SAVES[tuple(data.PLAYERS)]
+            functions.update_stats(res)
 
     elif command in data.COMMANDS['выйти из игры']:
         break
