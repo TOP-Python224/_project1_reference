@@ -14,6 +14,20 @@ def bot_turn(token_index: int, training: bool = False) -> int:
 
 def check_win() -> bool:
     """Проверяет текущую партию на наличие победной комбинации."""
+    series = []
+    main_diag, anti_diag = [], []
+    for i in data.RANGE:
+        series += [data.BOARD[i*data.DIM:(i+1)*data.DIM]]
+        series += [data.BOARD[i::data.DIM]]
+        main_diag += [data.BOARD[i+i*data.DIM]]
+        anti_diag += [data.BOARD[(i+1)*data.DIM-i-1]]
+    series += [main_diag, anti_diag]
+
+    for seq in series:
+        if len(set(seq)) == 1:
+            if all(seq):
+                return True
+    return False
 
 
 def game() -> data.Score | None:
@@ -22,4 +36,4 @@ def game() -> data.Score | None:
 
 # тесты
 if __name__ == '__main__':
-    pass
+    print(check_win())
