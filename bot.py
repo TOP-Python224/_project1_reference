@@ -19,7 +19,10 @@ def hard_mode() -> int:
     if len(data.TURNS) < 2*data.DIM - 1:
         ew = matrix_add(ew, SM[bot_token_index])
     weights_clear(tw, ew)
-    return index_of_rand_max([cell for row in ew for cell in row])
+    if any(vectorization(ew)):
+        return index_of_rand_max(vectorization(ew))
+    else:
+        return easy_mode()
 
 
 def weights_tokens(token_index: int) -> data.Matrix:
@@ -65,6 +68,11 @@ def weights_clear(tokensweights: data.Matrix,
         for j in data.RANGE:
             if tokensweights[i][j]:
                 solvingweights[i][j] = 0
+
+
+def vectorization(matrix: data.Matrix) -> data.Series:
+    """Возвращает плоскую последовательность, полученную в результате преобразования переданной матрицы."""
+    return [cell for row in matrix for cell in row]
 
 
 def matricization(sequence: data.Series) -> data.Matrix:
