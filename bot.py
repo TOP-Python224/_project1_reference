@@ -6,12 +6,6 @@ from random import choice
 # импорт дополнительных модулей
 import data
 
-# переменные модуля
-SM = (
-    [[1, 0, 1], [0, 2, 0], [1, 0, 1]],
-    [[2, 0, 2], [0, 0, 0], [2, 0, 2]],
-)
-
 
 def easy_mode() -> int:
     """Возвращает номер случайной свободной клетки игрового поля."""
@@ -28,14 +22,13 @@ def hard_mode() -> int:
     ew = weights_empty(tw)
     if DEBUG:
         print(f'{ew = }')
-    if data.DIM == 3:
-        if len(data.TURNS) < 2*data.DIM - 1:
-            ew = matrix_add(ew, SM[bot_token_index])
-            if DEBUG:
-                print(f'{ew = }')
+    if len(data.TURNS) < 2*data.DIM - 1:
+        ew = matrix_add(ew, SM[bot_token_index])
+        if DEBUG:
+            print(f'sm + {ew = }')
     weights_clear(tw, ew)
     if DEBUG:
-        print(f'{ew = }')
+        print(f'clear sw = {ew}')
     return index_of_rand_max([cell for row in ew for cell in row])
 
 
@@ -45,10 +38,13 @@ def weights_tokens(token_index: int) -> data.Matrix:
     tokensweights = [[0]*data.DIM for _ in data.RANGE]
     for i in data.RANGE:
         for j in data.RANGE:
-            if board[i][j] == data.TOKENS[token_index]:
-                tokensweights[i][j] = data.WEIGHT_OWN
-            elif board[i][j] == data.TOKENS[token_index-1]:
-                tokensweights[i][j] = data.WEIGHT_FOE
+            try:
+                if board[i][j] == data.TOKENS[token_index]:
+                    tokensweights[i][j] = data.WEIGHT_OWN
+                elif board[i][j] == data.TOKENS[token_index-1]:
+                    tokensweights[i][j] = data.WEIGHT_FOE
+            except IndexError:
+                pass
     return tokensweights
 
 
@@ -134,12 +130,92 @@ def index_of_rand_max(series: data.Series) -> int:
     return choice([i for i, v in enumerate(series) if v == m])
 
 
+def calc_sm_cross() -> data.Matrix:
+    """Вычисляет и возвращает начальную матрицу стратегии крестика."""
+    sm_cross = [[0]*data.DIM for _ in data.RANGE]
+    half, rem = divmod(data.DIM, 2)
+    diag = list(range(1, half+1)) + list(range(half+rem, 0, -1))
+    for i in data.RANGE:
+        sm_cross[i][i] = diag[i]
+        sm_cross[i][-i-1] = diag[i]
+    return sm_cross
+
+
+def calc_sm_zero() -> data.Matrix:
+    """Вычисляет и возвращает начальную матрицу стратегии нолика."""
+
+    def triangle_desc(n: int, start: int) -> data.Matrix:
+        """Генерирует и возвращает верхне-треугольную по побочной диагонали матрицу, заполняемую параллельно побочной диагонали значениями по убыванию."""
+        flat = []
+        indexes = range(n)
+        for i in indexes:
+            flat += [m if m > 0 else 0 for m in range(start-i, -start, -1)][:n]
+        matrix = [flat[i*n:(i+1)*n] for i in indexes]
+        if n > 2:
+            for i in indexes:
+                for j in indexes:
+                    if i > n-j-1:
+                        matrix[i][j] = 0
+        return matrix
+
+    def rot90(matrix: data.Matrix) -> data.Matrix:
+        """Возвращает "повёрнутую" на 90° матрицу."""
+        indexes = range(len(matrix))
+        matrix = [[matrix[j][i] for j in indexes] for i in indexes]
+        for i in indexes:
+            matrix[i] = matrix[i][::-1]
+        return matrix
+
+    half, rem = divmod(data.DIM, 2)
+    quarter = triangle_desc(half, half+rem)
+    if data.DIM > 6:
+        for i in range(half):
+            for j in range(half):
+                if i == half-j-1:
+                    if i != j:
+                        quarter[i][j] -= 1
+                if i > half-j:
+                    quarter[i][i] = half - i - (rem+1)%2
+    m1 = quarter
+    m2 = rot90(m1)
+    m3 = rot90(m2)
+    m4 = rot90(m3)
+    top, bot = [], []
+    for i in range(half):
+        top += [m1[i] + [0]*rem + m2[i]]
+        bot += [m4[i] + [0]*rem + m3[i]]
+    return top + [[0]*data.DIM]*rem + bot
+
+
+# переменные модуля
+SM = (
+    calc_sm_cross(),
+    calc_sm_zero()
+)
+
+
 # тесты
 if __name__ == '__main__':
     DEBUG = True
 
-    data.PLAYERS = ['GennDALF', '#2']
-    data.TURNS = [5, 7, 1]
-    data.BOARD = ['X', '', '', '', 'X', '', 'O', '', '']
+    data.DIM = 5
+    data.RANGE = range(data.DIM)
+    SM = (
+        calc_sm_cross(),
+        calc_sm_zero()
+    )
+
+    print(f'{calc_sm_cross() = }')
+    print(f'{calc_sm_zero() = }\n')
+
+    data.PLAYERS = ['#2', 'GennDALF']
+    data.BOARD = ['']*data.DIM**2
+    data.TURNS = [13, 2, 7, 3]
+    for i in range(len(data.TURNS)):
+        data.BOARD[data.TURNS[i]-1] = data.TOKENS[i%2]
+
+    for row in matricization(data.BOARD):
+        print(row)
+    print()
 
     print(f'{hard_mode() = }')

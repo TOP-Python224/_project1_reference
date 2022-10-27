@@ -6,6 +6,7 @@ from math import ceil
 # импорт дополнительных модулей
 import data
 import functions
+import bot
 
 
 def human_turn() -> int | None:
