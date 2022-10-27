@@ -14,21 +14,11 @@ def easy_mode() -> int:
 def hard_mode() -> int:
     """Вычисляет наиболее выигрышный ход и возвращает номер клетки для этого хода."""
     bot_token_index = data.PLAYERS.index('#2')
-    if DEBUG:
-        print(f'{bot_token_index = }')
     tw = weights_tokens(bot_token_index)
-    if DEBUG:
-        print(f'{tw = }')
     ew = weights_empty(tw)
-    if DEBUG:
-        print(f'{ew = }')
     if len(data.TURNS) < 2*data.DIM - 1:
         ew = matrix_add(ew, SM[bot_token_index])
-        if DEBUG:
-            print(f'sm + {ew = }')
     weights_clear(tw, ew)
-    if DEBUG:
-        print(f'clear sw = {ew}')
     return index_of_rand_max([cell for row in ew for cell in row])
 
 
@@ -196,8 +186,6 @@ SM = (
 
 # тесты
 if __name__ == '__main__':
-    DEBUG = True
-
     data.DIM = 5
     data.RANGE = range(data.DIM)
     SM = (
