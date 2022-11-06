@@ -15,11 +15,12 @@ WEIGHT_OWN = 1.5
 WEIGHT_FOE = 1
 
 DIM = 3
+CELLS = DIM**2
 RANGE = range(DIM)
-RANGE_FLAT = range(DIM**2)
+ALL_TURNS = range(CELLS)
 
 TURNS = []
-BOARD = [''] * DIM**2
+BOARD = ['']*CELLS
 
 TRAINING = False
 

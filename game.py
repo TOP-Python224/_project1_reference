@@ -37,7 +37,7 @@ def check_win() -> bool:
 
 def game(loaded: bool = False) -> data.Score | None:
     """Управляет игровым процессом для каждой новой или загруженной партии."""
-    turns = ((0, 1)*ceil(data.DIM**2 / 2))[:data.DIM**2]
+    turns = ((0, 1)*ceil(data.CELLS / 2))[:data.CELLS]
     if loaded:
         turns = turns[len(data.TURNS):]
     for i in turns:
@@ -53,7 +53,7 @@ def game(loaded: bool = False) -> data.Score | None:
                 return None
         # 15. Обновление глобальных переменных
         data.TURNS += [cell_index]
-        data.BOARD[cell_index-1] = data.TOKENS[i]
+        data.BOARD[cell_index] = data.TOKENS[i]
         # выполнение автосохранения
         data.SAVES[tuple(data.PLAYERS)] = data.TURNS
         # обновление текстовых файлов данных
